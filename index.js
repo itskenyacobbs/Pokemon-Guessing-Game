@@ -63,6 +63,14 @@ app.get("/guess/:gameID/:n", async (req, res) => {
 	if (!Number(decodeGameID)) {
 		res.status(400).json({ message: "invalid game id" });
 	}
+	if (Number(n) < 0 || Number(n) > 4) {
+		res
+			.status(400)
+			.json({
+				message:
+					"invalid hint number. Please choose a number between 0 and 4 included",
+			});
+	}
 	const hintIndex = Number(n);
 	console.log(game_id);
 	console.log(hintIndex);
