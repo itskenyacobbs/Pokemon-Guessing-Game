@@ -84,7 +84,10 @@ app.get("/guess/:gameID/:guess", async (req, res) => {
   const id = Number(game_id);
   const pokemon = await getPokemon(id);
   if (pokemon.name === guess) {
-    res.json({ isCorrect: "Congratulations correct pokemon!" });
+    res.json({
+      isCorrect: "Congratulations correct pokemon!",
+      pokemon: pokemon.name,
+    });
   } else {
     res.json({ isCorrect: "Wrong try again" });
   }
