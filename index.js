@@ -13,17 +13,27 @@ const getPokemon = async (number) => {
   return pokemonData; //The whole pokemon data is returned
 };
 
+//Generating Pokemon hints
+const getHints = (pokemonData) => {
+  //!TODO: for pokemon data when retrieving hints --> 5?
+  return {
+    height: pokemonData.height,
+    moves: [pokemonData.moves[0].move.name, pokemonData.moves[1].move.name],
+    cryLink: pokemonData.cries.latest,
+    weight: pokemonData.weight,
+    abilities: pokemonData.abilities[0].ability.name,
+  };
+};
+
 //
 const generateGameID = async () => {
   const randomNumber = Math.floor(Math.random() * 1350) + 1;
   const randomPokemon = await getPokemon(randomNumber);
   const gameID = btoa(randomPokemon.id.toString());
   console.log(gameID);
-  //!TODO: for pokemon data when retrieving hints --> 5?
-  for (let i = 0; i < 10; i++) {
-    console.log(randomPokemon.moves[i].move.name);
-  }
-  return { game_id: gameID };
+  const hintObject = getHints(randomPokemon);
+  console.log(hintObject);
+  return { game_id: gameID, hints: 5 };
 };
 
 //--------------------------- EXPRESS ROUTES ----------------------------------
@@ -34,8 +44,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/new", async (req, res) => {
-  const { game_id } = await generateGameID();
-  res.json({ id: game_id });
+  const game = await generateGameID();
+  res.json(game);
 });
 
 app.listen(PORT, () => {
