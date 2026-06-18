@@ -7,19 +7,24 @@
 Create an Express Server with routes and external API extractor methods to mimic a pokemon guessing game. The game should have at least _three_ routes:
 
 - `"/new"` : A _base64_ encoded **pokemon id** should be returned and the **number of hints** allowed. i.e ({game_id: "abc", available_hints: "123"}).
+
 - `"hint/:gameID/:n"`: One hint statement that corresponds to the parameter `:n` and `:gameID` points to the specific pokemon _the encoded pokemon_id_.
+
 - `"/guess/:gameID/:guess"`: A **_POST_** route, where the user send a guess for thepokemon name, and a response from the server should be recieved stating if the guess is right or not. i.e ({isCorrect: true/false}).
 
 ### Built:
 
 1. Created _boilerplate_ for a **node.js** project using `yarn init -y` and added the **express** library using `yarn add express`.
+
 2. Wrote the _default_ express route on port 3000.
 
 ```js
 const PORT = 3000;
+
 app.get("/", (req, res) => {
 	res.send("Hello :)");
 });
+
 app.listen(PORT, () => {
 	console.log(`Listening at Port: 3000`);
 });
@@ -30,9 +35,13 @@ app.listen(PORT, () => {
 ```js
 const getPokemon = async (number) => {
 	const url = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
+
 	const pokemonData = await url.json();
+
 	console.log(number);
+
 	console.log("Pokemon name: ", pokemonData.name);
+
 	return pokemonData; //The whole pokemon data is returned
 };
 ```
@@ -42,9 +51,13 @@ const getPokemon = async (number) => {
 ```js
 const generateGameID = async () => {
 	const randomNumber = Math.floor(Math.random() * 1350) + 1;
+
 	const randomPokemon = await getPokemon(randomNumber);
+
 	const gameID = btoa(randomPokemon.id.toString());
+
 	console.log(gameID);
+
 	return { game_id: gameID };
 };
 ```
@@ -54,6 +67,7 @@ const generateGameID = async () => {
 ```js
 app.get("/new", async (req, res) => {
 	const { game_id } = await generateGameID();
+
 	res.json({ id: game_id });
 });
 ```
@@ -63,24 +77,36 @@ app.get("/new", async (req, res) => {
 ```js
 app.get("/hint/:gameID/:n", async (req, res) => {
 	const { gameID, n } = req.params;
+
 	const decodeGameID = decodeID(gameID);
+
 	const game_id = Number(decodeGameID);
+
 	if (!Number(decodeGameID)) {
 		res.status(400).json({ message: "invalid game id" });
 	}
+
 	if (Number(n) < 0 || Number(n) > 4) {
 		res.status(400).json({
 			message:
 				"invalid hint number. Please choose a number between 0 and 4 included",
 		});
 	}
+
 	const hintIndex = Number(n);
+
 	console.log(game_id);
+
 	console.log(hintIndex);
+
 	const pokemon = await getPokemon(game_id);
+
 	const hints = getHints(pokemon);
+
 	const hint = hints[hintIndex];
+
 	console.log(hint);
+
 	res.json({ hint: hint });
 });
 ```
@@ -90,9 +116,13 @@ app.get("/hint/:gameID/:n", async (req, res) => {
 ```js
 app.get("/guess/:gameID/:guess", async (req, res) => {
 	const { gameID, guess } = req.params;
+
 	const game_id = decodeID(gameID);
+
 	const id = Number(game_id);
+
 	const pokemon = await getPokemon(id);
+
 	if (pokemon.name === guess) {
 		res.json({ isCorrect: "Congratulations correct pokemon!" });
 	} else {
@@ -102,7 +132,9 @@ app.get("/guess/:gameID/:guess", async (req, res) => {
 ```
 
 5. Extracting the hints from the pokemon object retrieved and displaying them to the user based on the `:n` parameter.
+
 6. Creating the `hint/` route to display the hint based on the index.
+
 7. Create the `guess/` route to check the user's guess and validate it.
 
 ### Current work in progress:
