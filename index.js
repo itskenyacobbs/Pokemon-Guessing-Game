@@ -4,6 +4,10 @@ const PORT = 3000;
 
 //------------------------------ METHODS FOR EXTERNAL API EXTRACTION ---------------------------------
 
+const decodeID = (encodedID) => {
+  return atob(encodedID);
+};
+
 //To retreive the specific pokemon information for a pokemon by it's id 'i.e number'
 const getPokemon = async (number) => {
   const url = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
@@ -16,13 +20,13 @@ const getPokemon = async (number) => {
 //Generating Pokemon hints
 const getHints = (pokemonData) => {
   //!TODO: for pokemon data when retrieving hints --> 5?
-  return {
-    height: pokemonData.height,
-    moves: [pokemonData.moves[0].move.name, pokemonData.moves[1].move.name],
-    cryLink: pokemonData.cries.latest,
-    weight: pokemonData.weight,
-    abilities: pokemonData.abilities[0].ability.name,
-  };
+  return [
+    { height: pokemonData.height },
+    { cryLink: pokemonData.cries.latest },
+    { weight: pokemonData.weight },
+    { abilities: pokemonData.abilities[0].ability.name },
+    { image: pokemonData.sprites.front_default },
+  ];
 };
 
 //
@@ -46,6 +50,20 @@ app.get("/", (req, res) => {
 app.get("/new", async (req, res) => {
   const game = await generateGameID();
   res.json(game);
+});
+
+app.get("/guess/:gameID/:n", async (req, res) => {
+  const { gameID, n } = req.params;
+  const decodeGameID = decodeID(gameID);
+  const game_id = Number(decodeGameID);
+  const hintIndex = Number(n);
+  console.log(game_id);
+  console.log(hintIndex);
+  const pokemon = await getPokemon(game_id);
+  const hints = getHints(pokemon);
+  const hint = hints[hintIndex];
+  console.log(hint);
+  res.json({ hint: hint });
 });
 
 app.listen(PORT, () => {
