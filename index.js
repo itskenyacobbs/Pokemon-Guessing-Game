@@ -5,7 +5,6 @@ const PORT = 3000;
 //------------------------------ METHODS FOR EXTERNAL API EXTRACTION ---------------------------------
 
 const decodeID = (encodedID) => {
-	console.log(encodedID);
 	if (encodedID.length !== 4) {
 		return "0";
 	}
@@ -56,7 +55,7 @@ app.get("/new", async (req, res) => {
 	res.json(game);
 });
 
-app.get("/guess/:gameID/:n", async (req, res) => {
+app.get("/hint/:gameID/:n", async (req, res) => {
 	const { gameID, n } = req.params;
 	const decodeGameID = decodeID(gameID);
 	const game_id = Number(decodeGameID);
@@ -64,12 +63,10 @@ app.get("/guess/:gameID/:n", async (req, res) => {
 		res.status(400).json({ message: "invalid game id" });
 	}
 	if (Number(n) < 0 || Number(n) > 4) {
-		res
-			.status(400)
-			.json({
-				message:
-					"invalid hint number. Please choose a number between 0 and 4 included",
-			});
+		res.status(400).json({
+			message:
+				"invalid hint number. Please choose a number between 0 and 4 included",
+		});
 	}
 	const hintIndex = Number(n);
 	console.log(game_id);
@@ -79,6 +76,18 @@ app.get("/guess/:gameID/:n", async (req, res) => {
 	const hint = hints[hintIndex];
 	console.log(hint);
 	res.json({ hint: hint });
+});
+
+app.get("/guess/:gameID/:guess", async (req, res) => {
+	const { gameID, guess } = req.params;
+	const game_id = decodeID(gameID);
+	const id = Number(game_id);
+	const pokemon = await getPokemon(id);
+	if (pokemon.name === guess) {
+		res.json({ isCorrect: "Congratulations correct pokemon!" });
+	} else {
+		res.json({ isCorrect: "Wrong try again" });
+	}
 });
 
 app.listen(PORT, () => {
