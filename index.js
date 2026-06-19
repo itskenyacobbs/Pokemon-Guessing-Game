@@ -93,6 +93,14 @@ app.get("/guess/:gameID/:guess", async (req, res) => {
   }
 });
 
+app.get("/giveup/:gameID", async (req, res) => {
+  const gameID = req.params.gameID;
+  const decoded_game_id = decodeID(gameID);
+  const game_id = Number(decoded_game_id);
+  const pokemon = await getPokemon(game_id);
+  res.json({ answer: pokemon.name });
+});
+
 app.listen(PORT, () => {
   console.log(`Listening at Port: 3000`);
 });

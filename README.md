@@ -22,11 +22,11 @@ Create an Express Server with routes and external API extractor methods to mimic
 const PORT = 3000;
 
 app.get("/", (req, res) => {
-	res.send("Hello :)");
+  res.send("Hello :)");
 });
 
 app.listen(PORT, () => {
-	console.log(`Listening at Port: 3000`);
+  console.log(`Listening at Port: 3000`);
 });
 ```
 
@@ -34,15 +34,15 @@ app.listen(PORT, () => {
 
 ```js
 const getPokemon = async (number) => {
-	const url = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
+  const url = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
 
-	const pokemonData = await url.json();
+  const pokemonData = await url.json();
 
-	console.log(number);
+  console.log(number);
 
-	console.log("Pokemon name: ", pokemonData.name);
+  console.log("Pokemon name: ", pokemonData.name);
 
-	return pokemonData; //The whole pokemon data is returned
+  return pokemonData; //The whole pokemon data is returned
 };
 ```
 
@@ -50,15 +50,15 @@ const getPokemon = async (number) => {
 
 ```js
 const generateGameID = async () => {
-	const randomNumber = Math.floor(Math.random() * 1350) + 1;
+  const randomNumber = Math.floor(Math.random() * 1350) + 1;
 
-	const randomPokemon = await getPokemon(randomNumber);
+  const randomPokemon = await getPokemon(randomNumber);
 
-	const gameID = btoa(randomPokemon.id.toString());
+  const gameID = btoa(randomPokemon.id.toString());
 
-	console.log(gameID);
+  console.log(gameID);
 
-	return { game_id: gameID };
+  return { game_id: gameID };
 };
 ```
 
@@ -66,9 +66,9 @@ const generateGameID = async () => {
 
 ```js
 app.get("/new", async (req, res) => {
-	const { game_id } = await generateGameID();
+  const { game_id } = await generateGameID();
 
-	res.json({ id: game_id });
+  res.json({ id: game_id });
 });
 ```
 
@@ -76,38 +76,38 @@ app.get("/new", async (req, res) => {
 
 ```js
 app.get("/hint/:gameID/:n", async (req, res) => {
-	const { gameID, n } = req.params;
+  const { gameID, n } = req.params;
 
-	const decodeGameID = decodeID(gameID);
+  const decodeGameID = decodeID(gameID);
 
-	const game_id = Number(decodeGameID);
+  const game_id = Number(decodeGameID);
 
-	if (!Number(decodeGameID)) {
-		res.status(400).json({ message: "invalid game id" });
-	}
+  if (!Number(decodeGameID)) {
+    res.status(400).json({ message: "invalid game id" });
+  }
 
-	if (Number(n) < 0 || Number(n) > 4) {
-		res.status(400).json({
-			message:
-				"invalid hint number. Please choose a number between 0 and 4 included",
-		});
-	}
+  if (Number(n) < 0 || Number(n) > 4) {
+    res.status(400).json({
+      message:
+        "invalid hint number. Please choose a number between 0 and 4 included",
+    });
+  }
 
-	const hintIndex = Number(n);
+  const hintIndex = Number(n);
 
-	console.log(game_id);
+  console.log(game_id);
 
-	console.log(hintIndex);
+  console.log(hintIndex);
 
-	const pokemon = await getPokemon(game_id);
+  const pokemon = await getPokemon(game_id);
 
-	const hints = getHints(pokemon);
+  const hints = getHints(pokemon);
 
-	const hint = hints[hintIndex];
+  const hint = hints[hintIndex];
 
-	console.log(hint);
+  console.log(hint);
 
-	res.json({ hint: hint });
+  res.json({ hint: hint });
 });
 ```
 
@@ -115,19 +115,19 @@ app.get("/hint/:gameID/:n", async (req, res) => {
 
 ```js
 app.get("/guess/:gameID/:guess", async (req, res) => {
-	const { gameID, guess } = req.params;
+  const { gameID, guess } = req.params;
 
-	const game_id = decodeID(gameID);
+  const game_id = decodeID(gameID);
 
-	const id = Number(game_id);
+  const id = Number(game_id);
 
-	const pokemon = await getPokemon(id);
+  const pokemon = await getPokemon(id);
 
-	if (pokemon.name === guess) {
-		res.json({ isCorrect: "Congratulations correct pokemon!" });
-	} else {
-		res.json({ isCorrect: "Wrong try again" });
-	}
+  if (pokemon.name === guess) {
+    res.json({ isCorrect: "Congratulations correct pokemon!" });
+  } else {
+    res.json({ isCorrect: "Wrong try again" });
+  }
 });
 ```
 
@@ -136,6 +136,18 @@ app.get("/guess/:gameID/:guess", async (req, res) => {
 6. Creating the `hint/` route to display the hint based on the index.
 
 7. Create the `guess/` route to check the user's guess and validate it.
+
+8. Created a `giveup/` route that returns the name of the pokemon when the user gives up.
+
+```js
+app.get("/giveup/:gameID", async (req, res) => {
+  const gameID = req.params.gameID;
+  const decoded_game_id = decodeID(gameID);
+  const game_id = Number(decoded_game_id);
+  const pokemon = await getPokemon(game_id);
+  res.json({ answer: pokemon.name });
+});
+```
 
 ### Current work in progress:
 
