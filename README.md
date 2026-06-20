@@ -1,6 +1,6 @@
 ### Collaborators:
 
-**Kenya [itskenyacobbs (Kenya Cobbs) · GitHub](https://github.com/itskenyacobbs) & Yasmine** [YasmineRaef (Yasmine_Raef_M.) · GitHub](https://github.com/YasmineRaef)
+## **Kenya [itskenyacobbs (Kenya Cobbs) · GitHub](https://github.com/itskenyacobbs) & Yasmine** [YasmineRaef (Yasmine_Raef_M.) · GitHub](https://github.com/YasmineRaef)
 
 ### Project:
 
@@ -11,6 +11,8 @@ Create an Express Server with routes and external API extractor methods to mimic
 - `"hint/:gameID/:n"`: One hint statement that corresponds to the parameter `:n` and `:gameID` points to the specific pokemon _the encoded pokemon_id_.
 
 - `"/guess/:gameID/:guess"`: A **_POST_** route, where the user send a guess for thepokemon name, and a response from the server should be recieved stating if the guess is right or not. i.e ({isCorrect: true/false}).
+
+---
 
 ### Built:
 
@@ -133,9 +135,9 @@ app.get("/guess/:gameID/:guess", async (req, res) => {
 
 5. Extracting the hints from the pokemon object retrieved and displaying them to the user based on the `:n` parameter.
 
-6. Creating the `hint/` route to display the hint based on the index.
+6. Created the `hint/` route to display the hint based on the index.
 
-7. Create the `guess/` route to check the user's guess and validate it.
+7. Created the `guess/` route to check the user's guess and validate it.
 
 8. Created a `giveup/` route that returns the name of the pokemon when the user gives up.
 
@@ -149,7 +151,20 @@ app.get("/giveup/:gameID", async (req, res) => {
 });
 ```
 
+9. Added status codes all over the code to check for incorrect user data input `error: 400`, external server calling and API data extracting `error: 502` and internal server crashes `error: 500`.
+
+---
+
 ### Current work in progress:
 
 - Create Swagger documentation.
 - Design and implement a React frontend that could communicate with the express server to have more visual appealing game simulation.
+
+---
+
+### Resources used:
+
+1. Base64 encoding in JS: [Window atob() Method](https://www.w3schools.com/jsref/met_win_atob.asp)
+2. Stack overflow: returning several value data for one key: [arrays - Store multiple values in single key in json - Stack Overflow](https://stackoverflow.com/questions/17093180/store-multiple-values-in-single-key-in-json)
+3. PokeAPI: [PokéAPI](https://pokeapi.co/)
+4. Status codes reference: [HTTP response status codes - HTTP | MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)
